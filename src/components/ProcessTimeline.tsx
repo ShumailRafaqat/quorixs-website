@@ -1,201 +1,242 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Lightbulb, Palette, Code2, Rocket, TrendingUp } from "lucide-react";
 
 const steps = [
-  { icon: Lightbulb, title: "Strategy", desc: "Research & planning" },
-  { icon: Palette, title: "Design", desc: "UI/UX prototyping" },
-  { icon: Code2, title: "Develop", desc: "Agile development" },
-  { icon: Rocket, title: "Deploy", desc: "Launch & optimize" },
-  { icon: TrendingUp, title: "Scale", desc: "Growth & support" },
+  {
+    icon: Lightbulb,
+    title: "Strategy",
+    desc: "Research & planning",
+    tag: "01",
+    detail: "We dig deep into your market, users, and goals to craft a roadmap that actually works.",
+  },
+  {
+    icon: Palette,
+    title: "Design",
+    desc: "UI/UX prototyping",
+    tag: "02",
+    detail: "Pixel-perfect interfaces designed for delight. Every interaction is intentional.",
+  },
+  {
+    icon: Code2,
+    title: "Develop",
+    desc: "Agile development",
+    tag: "03",
+    detail: "Clean, scalable code built in sprints. You see progress every week.",
+  },
+  {
+    icon: Rocket,
+    title: "Deploy",
+    desc: "Launch & optimize",
+    tag: "04",
+    detail: "Battle-tested deployment with monitoring, CI/CD, and zero-downtime releases.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Scale",
+    desc: "Growth & support",
+    tag: "05",
+    detail: "Continuous iteration driven by real data. We grow with you.",
+  },
 ];
+
+const HexIcon = ({ icon: Icon, isActive, index }: { icon: any; isActive: boolean; index: number }) => {
+  return (
+    <motion.div
+      className="relative"
+      whileHover={{ scale: 1.1 }}
+      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+    >
+      <motion.div
+        className="absolute inset-[-8px] rounded-2xl border border-primary/20"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20 + index * 4, repeat: Infinity, ease: "linear" }}
+        style={{ borderRadius: "24px" }}
+      />
+      
+      <motion.div
+        className="absolute w-2 h-2 rounded-full bg-primary"
+        style={{ top: -4, left: "50%", marginLeft: -4 }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 6 + index * 2, repeat: Infinity, ease: "linear" }}
+      />
+
+      <div
+        className={`
+          relative w-20 h-20 rounded-2xl overflow-hidden
+          flex items-center justify-center
+          transition-all duration-500
+          ${isActive ? "glow-primary" : ""}
+        `}
+        style={{
+          background: isActive
+            ? "linear-gradient(135deg, hsl(165 80% 48% / 0.15), hsl(270 60% 60% / 0.1))"
+            : "hsl(240 12% 10% / 0.8)",
+          border: `1px solid ${isActive ? "hsl(165 80% 48% / 0.4)" : "hsl(240 8% 18% / 0.6)"}`,
+        }}
+      >
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(165 80% 48% / 0.1) 1px, transparent 1px), linear-gradient(90deg, hsl(165 80% 48% / 0.1) 1px, transparent 1px)",
+            backgroundSize: "8px 8px",
+          }}
+        />
+        <Icon
+          className={`relative z-10 w-9 h-9 transition-colors duration-300 ${
+            isActive ? "text-primary" : "text-muted-foreground"
+          }`}
+          strokeWidth={1.5}
+        />
+      </div>
+
+      <div
+        className="absolute -bottom-2 -right-2 font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-md border"
+        style={{
+          background: isActive ? "hsl(165 80% 48%)" : "hsl(240 12% 10%)",
+          color: isActive ? "hsl(240 15% 5%)" : "hsl(240 5% 55%)",
+          borderColor: isActive ? "hsl(165 80% 48%)" : "hsl(240 8% 18%)",
+        }}
+      >
+        {steps[index]?.tag}
+      </div>
+    </motion.div>
+  );
+};
 
 const ProcessTimeline = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: false, margin: "-100px" });
+  const [activeStep, setActiveStep] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  // Variants for staggered children
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.18,
-        delayChildren: 0.3,
-      },
-    },
-  };
+  useEffect(() => {
+    if (!isInView || isPaused) return;
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 60, scale: 0.92 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 120,
-        damping: 14,
-        duration: 0.8,
-      },
-    },
+    const interval = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % steps.length);
+    }, 4000); // 4 seconds per step – padhne ke liye comfortable
+
+    return () => clearInterval(interval);
+  }, [isInView, isPaused]);
+
+  const handleInteraction = (index: number) => {
+    setActiveStep(index);
+    setIsPaused(true);
+    setTimeout(() => setIsPaused(false), 10000);
   };
 
   return (
-    <section id="process" className="py-20 lg:py-28 relative overflow-hidden" ref={ref}>
-      {/* Background subtle gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-950/15 to-transparent pointer-events-none" />
+    <section
+      id="process"
+      className="py-24 lg:py-32 relative overflow-hidden"
+      ref={ref}
+    >
+      <div className="absolute inset-0 grid-pattern opacity-30" />
+      
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] rounded-full pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse, hsl(165 80% 48% / 0.06) 0%, transparent 70%)",
+        }}
+      />
 
       <div className="container mx-auto px-5 sm:px-6 lg:px-8 relative z-10">
         <motion.div
-          className="text-center mb-16 lg:mb-20"
-          initial={{ opacity: 0, y: 50 }}
+          className="mb-20 lg:mb-24"
+          initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-5 bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent">
-            Our Process
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-px flex-1 max-w-[60px] bg-primary/50" />
+            <span className="font-mono text-sm text-primary tracking-widest uppercase">
+              // how we work
+            </span>
+          </div>
+          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-5">
+            <span className="text-foreground">From idea to </span>
+            <span className="text-gradient-primary">reality</span>
+            <span className="text-primary animate-pulse">_</span>
           </h2>
-          <p className="text-muted-foreground/90 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-            A streamlined, proven approach — designed to turn ideas into scalable, high-impact products.
+          <p className="text-muted-foreground text-lg sm:text-xl max-w-xl leading-relaxed">
+            Five phases. One seamless journey. Every step engineered for maximum impact.
           </p>
         </motion.div>
 
-        {/* Desktop horizontal timeline */}
-        <div className="hidden md:flex justify-between items-center relative max-w-6xl mx-auto">
-          {/* Animated connecting line with glow */}
-          <motion.div
-            className="absolute top-1/2 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-blue-500/60 via-purple-500/50 to-transparent rounded-full"
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={isInView ? { scaleX: 1, opacity: 1 } : {}}
-            transition={{ duration: 2.2, delay: 0.5, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute top-1/2 left-0 right-0 h-8 bg-gradient-to-r from-transparent via-blue-600/20 via-purple-600/15 to-transparent blur-xl -translate-y-1/2 pointer-events-none"
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={isInView ? { scaleX: 1, opacity: 0.7 } : {}}
-            transition={{ duration: 2.5, delay: 0.6 }}
-          />
+        {/* Single active step container */}
+        <div className="relative min-h-[380px] lg:min-h-[480px] flex items-start justify-center">
+          {steps.map((step, i) => {
+            const isActive = activeStep === i;
 
-          <motion.div
-            className="flex justify-between items-start w-full relative z-10"
-            variants={containerVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-          >
-            {steps.map((step, i) => (
+            if (!isActive) return null;
+
+            return (
               <motion.div
                 key={step.title}
-                className="flex flex-col items-center text-center flex-1 px-4"
-                variants={itemVariants}
+                className="w-full max-w-4xl opacity-0 animate-in fade-in duration-700"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7 }}
               >
-                <motion.div
-                  className={`
-                    w-20 h-20 sm:w-24 sm:h-24 rounded-2xl 
-                    bg-gradient-to-br from-gray-900/70 to-black/50 
-                    backdrop-blur-md border border-white/10
-                    flex items-center justify-center mb-6 relative
-                    shadow-2xl shadow-black/40
-                  `}
-                  whileHover={{ 
-                    scale: 1.15, 
-                    rotate: 6, 
-                    y: -12,
-                    boxShadow: "0 25px 50px -12px rgba(59, 130, 246, 0.5)"
-                  }}
-                  transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                >
-                  <step.icon className="text-blue-400 w-10 h-10 sm:w-12 sm:h-12" strokeWidth={1.7} />
-
-                  {/* Pulsing step number */}
-                  <motion.div
-                    className="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white text-sm font-bold flex items-center justify-center shadow-lg border-2 border-white/30"
-                    animate={{ 
-                      scale: [1, 1.12, 1],
-                      boxShadow: [
-                        "0 0 0 0 rgba(59, 130, 246, 0.4)",
-                        "0 0 0 12px rgba(59, 130, 246, 0)",
-                        "0 0 0 0 rgba(59, 130, 246, 0)"
-                      ]
+                {/* Vertical connecting line (only desktop, centered-ish) */}
+                <div className="hidden lg:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px z-0">
+                  <div
+                    className="h-full w-px"
+                    style={{
+                      background:
+                        "linear-gradient(to bottom, transparent, hsl(165 80% 48% / 0.3) 10%, hsl(270 60% 60% / 0.2) 90%, transparent)",
                     }}
-                    transition={{ 
-                      duration: 2.5, 
-                      repeat: Infinity, 
-                      repeatType: "loop",
-                      delay: i * 0.3 
-                    }}
-                  >
-                    {i + 1}
-                  </motion.div>
-                </motion.div>
+                  />
+                </div>
 
-                <h3 className="font-display text-xl sm:text-2xl font-semibold text-white mb-2 tracking-tight">
-                  {step.title}
-                </h3>
-                <p className="text-gray-400/90 text-base sm:text-lg max-w-[180px]">
-                  {step.desc}
-                </p>
+                <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12 relative z-10">
+                  {/* Icon - centered on mobile, left on desktop */}
+                  <div className="flex-shrink-0">
+                    <HexIcon icon={step.icon} isActive={true} index={i} />
+                  </div>
+
+                  {/* Content */}
+                  <div className="glass-surface rounded-2xl p-6 lg:p-10 w-full max-w-3xl relative">
+                    <div className="relative z-10">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4">
+                        <h3 className="font-display text-3xl lg:text-4xl font-bold text-foreground tracking-tight">
+                          {step.title}
+                        </h3>
+                        <span className="font-mono text-sm lg:text-base text-muted-foreground tracking-wider">
+                          {step.desc}
+                        </span>
+                      </div>
+
+                      <p className="text-muted-foreground text-base lg:text-lg leading-relaxed">
+                        {step.detail}
+                      </p>
+                    </div>
+
+                    {/* Large step number watermark */}
+                    <div className="absolute top-4 right-6 lg:top-6 lg:right-8 font-display text-8xl lg:text-9xl font-bold text-border/15 select-none opacity-70">
+                      {step.tag}
+                    </div>
+                  </div>
+                </div>
               </motion.div>
-            ))}
-          </motion.div>
+            );
+          })}
         </div>
 
-        {/* Mobile vertical timeline - with more animation */}
-        <div className="md:hidden space-y-8 mt-10">
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.title}
-              className={`
-                flex items-start gap-5 glassmorphic 
-                rounded-2xl p-6 border border-white/8
-                bg-gradient-to-br from-gray-900/50 to-black/40
-                backdrop-blur-lg shadow-xl shadow-black/50
-              `}
-              initial={{ opacity: 0, x: -60, scale: 0.95 }}
-              animate={isInView ? { opacity: 1, x: 0, scale: 1 } : {}}
-              transition={{ 
-                duration: 0.9, 
-                delay: i * 0.2, 
-                type: "spring", 
-                stiffness: 100, 
-                damping: 12 
-              }}
-              whileHover={{ scale: 1.03, y: -4 }}
-            >
-              <div className="relative shrink-0">
-                <motion.div
-                  className="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-800/90 to-black/70 flex items-center justify-center border border-white/10 shadow-lg"
-                  whileHover={{ rotate: 10, scale: 1.15 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  <step.icon className="text-blue-400 w-8 h-8" strokeWidth={1.8} />
-                </motion.div>
-
-                <motion.div
-                  className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white text-xs font-bold flex items-center justify-center border-2 border-white/30 shadow-md"
-                  animate={{ 
-                    scale: [1, 1.15, 1],
-                  }}
-                  transition={{ 
-                    duration: 2, 
-                    repeat: Infinity, 
-                    repeatType: "reverse",
-                    delay: i * 0.4 
-                  }}
-                >
-                  {i + 1}
-                </motion.div>
-              </div>
-
-              <div className="pt-1">
-                <h3 className="font-display text-xl font-semibold text-white mb-1.5">
-                  {step.title}
-                </h3>
-                <p className="text-gray-400 text-base leading-relaxed">
-                  {step.desc}
-                </p>
-              </div>
-            </motion.div>
+        {/* Step indicators (dots) */}
+        <div className="flex justify-center gap-4 mt-12">
+          {steps.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => handleInteraction(i)}
+              className={`w-3.5 h-3.5 rounded-full transition-all duration-300 ${
+                activeStep === i
+                  ? "bg-primary scale-125 shadow-lg shadow-primary/40"
+                  : "bg-primary/30 hover:bg-primary/50"
+              }`}
+            />
           ))}
         </div>
       </div>
