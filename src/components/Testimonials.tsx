@@ -6,7 +6,7 @@ const testimonials = [
   {
     name: "Sarah Chen",
     role: "Founder & CEO, TechVentures",
-    text: "Honestly, we were pretty skeptical at first — we'd been burned by agencies before. But Quorixs actually delivered. Their automation stuff cut our monthly cloud bill by almost 38% without breaking anything. Still using it daily.",
+    text: "Honestly, we were pretty skeptical at first we'd been burned by agencies before. But Quorixs actually delivered. Their automation stuff cut our monthly cloud bill by almost 38% without breaking anything. Still using it daily.",
     rating: 5,
     avatar: "SC",
   },
@@ -20,7 +20,7 @@ const testimonials = [
   {
     name: "Emily Nakamura",
     role: "Co-founder, ShopWave",
-    text: "We needed to launch fast or lose the market window. They turned our messy Figma prototype into a working Shopify + custom backend store in under 9 weeks. The checkout flow is buttery smooth — conversion rate jumped 22% in the first month.",
+    text: "We needed to launch fast or lose the market window. They turned our messy Figma prototype into a working Shopify + custom backend store in under 9 weeks. The checkout flow is buttery smooth  conversion rate jumped 22% in the first month.",
     rating: 5,
     avatar: "EN",
   },
