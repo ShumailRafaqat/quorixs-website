@@ -1,5 +1,5 @@
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Globe, Database, Bot, Smartphone, ShoppingCart, Cloud, ArrowUpRight, Sparkles } from "lucide-react";
 
 const services = [
@@ -114,15 +114,32 @@ const AnimatedNumber = ({ value }: { value: string }) => {
 const ServicesSection = () => {
   const [active, setActive] = useState(0);
   const [hoveredTab, setHoveredTab] = useState<number | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
   const activeService = services[active];
   const ActiveIcon = activeService.icon;
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Progress indicator
+  // Auto-advance logic
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setActive((prev) => (prev + 1) % services.length);
+    }, 4200); // 4.2 seconds – you can change this value
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
   const progress = ((active + 1) / services.length) * 100;
 
   return (
-    <section id="services" className="py-20 lg:py-32 relative noise-bg overflow-hidden">
+    <section
+      id="services"
+      className="py-20 lg:py-32 relative noise-bg overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {/* Animated mesh gradient bg */}
       <AnimatePresence mode="sync">
         <motion.div
@@ -219,8 +236,14 @@ const ServicesSection = () => {
               return (
                 <motion.button
                   key={service.title}
-                  onClick={() => setActive(i)}
-                  onMouseEnter={() => setHoveredTab(i)}
+                  onClick={() => {
+                    setActive(i);
+                    setIsPaused(true); // User clicked → pause auto-play
+                  }}
+                  onMouseEnter={() => {
+                    setHoveredTab(i);
+                    setIsPaused(true); // Hover → pause
+                  }}
                   onMouseLeave={() => setHoveredTab(null)}
                   className="w-full text-left relative group py-4 sm:py-5 pl-7 sm:pl-9 pr-4"
                   initial={{ opacity: 0, x: -30 }}
@@ -306,7 +329,10 @@ const ServicesSection = () => {
           </div>
 
           {/* Right: Detail panel */}
-          <div className="lg:w-[58%] mt-10 lg:mt-0 lg:pl-10">
+          <div
+            className="lg:w-[58%] mt-10 lg:mt-0 lg:pl-10"
+            onMouseEnter={() => setIsPaused(true)}
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
