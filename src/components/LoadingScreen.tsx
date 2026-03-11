@@ -161,7 +161,7 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => {
               animate={{ opacity: 1, y: 0, letterSpacing: '0.2em' }}
               transition={{ delay: 0.5, duration: 0.8 }}
             >
-              QUORIXS
+              QUORISX
             </motion.h2>
           </motion.div>
         )}
