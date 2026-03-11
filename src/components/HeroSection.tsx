@@ -297,7 +297,7 @@ const Hero = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 1.3 }}
                   >
-                    <span className="text-primary">quorixs</span>.
+                    <span className="text-primary">quorisx</span>.
                     <span className="text-foreground">create</span>(
                     <span style={{ color: "hsl(120 60% 50%)" }}>
                       "future"
