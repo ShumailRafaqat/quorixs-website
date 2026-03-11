@@ -6,7 +6,7 @@ const testimonials = [
   {
     name: "Sarah Chen",
     role: "Founder & CEO, TechVentures",
-    text: "Honestly, we were pretty skeptical at first we'd been burned by agencies before. But Quorixs actually delivered. Their automation stuff cut our monthly cloud bill by almost 38% without breaking anything. Still using it daily.",
+    text: "Honestly, we were pretty skeptical at first we'd been burned by agencies before. But Quorisx actually delivered. Their automation stuff cut our monthly cloud bill by almost 38% without breaking anything. Still using it daily.",
     rating: 5,
     avatar: "SC",
   },
